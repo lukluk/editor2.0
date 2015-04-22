@@ -28,13 +28,15 @@ $filename = $_GET['src'];
 
 $nfn=str_replace('store/','',$filename);
 $nfn='store/'.file_newname('store',$nfn);
-
-if((strpos(strtolower($filename),'jpg')>0) || (strpos(strtolower($filename),'jepg')>0))
+$png=false;
+if((strpos(strtolower($filename),'jpg')>0) || (strpos(strtolower($filename),'jpeg')>0))
 {
 $image = imagecreatefromjpeg($_GET['src']);
 }else
 {
   $image = imagecreatefrompng($_GET['src']);
+  $png=true;
+  imagealphablending($image, true);
 }
 
 
@@ -52,7 +54,13 @@ $thumb_width = ((intval($_GET['x2'])*$dw)-(intval($_GET['x'])*$dw));
 $thumb_height = ((intval($_GET['y2'])*$dh)-(intval($_GET['y'])*$dh));
 
 $thumb = imagecreatetruecolor( $thumb_width, $thumb_height );
+if($png){
+imagesavealpha($thumb, true);
+imagealphablending($thumb, false);
+$transparent = imagecolorallocatealpha($thumb, 0, 0, 0, 127);
+imagefill($img_cropped, 0, 0, $transparent);
 
+}
 // Resize and crop
 imagecopyresampled($thumb,
                    $image,
