@@ -1,0 +1,4 @@
+AuthGroupFile /dev/null
+AuthType Basic
+AuthUserFile /home/lukluk/domains/pdftool.eu/.htpasswd/public_html/editor/.htpasswd
+AuthName "EDITOR IS AT THE WORKSHOP"

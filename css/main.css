@@ -1,0 +1,154 @@
+body 
+    {
+       
+    }
+.sub_body 
+    {
+        position: relative;
+        background-color:white;
+        margin:0px auto;
+        height:600px;
+        width:1290px;
+        left: 0px;
+    }
+.logo 
+    {
+        width: 60px;
+        height: 65px;
+        background: red;
+        padding: 10px;
+        margin-left: 10px;
+    }
+.msg_1 span
+    {
+        position: absolute;
+        margin-left:120px;
+        top: 0px;
+        font-size: 18px;
+        
+    }
+.msg_1 a
+    {
+        color:#25B6CF ;
+        text-decoration: none;
+    }
+#dialog 
+    {
+        display: none;
+    } 
+#menu_r
+    {
+        position: relative;
+        left: 620px;
+        top: -100px;
+    }
+#menu_r ul li  
+    {
+        float:left;
+        list-style-type: none;
+        margin-left: 6px;
+        margin-right: 6px;
+    } 
+#menu_r ul li a
+    {
+       color:#25B6CF ;  
+       text-decoration: none;
+       font-size: 18px;
+    }
+#msg1 
+    {
+        display: none;
+    }
+#msg2 
+    {
+        display: none;
+    }
+#msg3 
+    {
+        display: none;
+    }
+#tabmenu 
+    {
+        position:relative;
+        top: -60px; 
+        left: 590px; 
+    }
+#top_right_menu 
+    {
+        position: absolute;
+    }
+#top_right_menu ul li
+    {
+        margin-left: -4px;
+        margin-right: -4px;
+    }
+
+    {
+        left: 10px;
+        margin-top: 10px;
+    }
+#left_content
+	{
+	  top:-20px;
+	  position:relative;
+	}
+#right_content
+    {
+        position: relative;
+        top: -480px;
+        left: 200px;
+    }
+#canvas 
+    {
+        left: 190px;
+        height: 450px;
+        width:1040px;
+        background: silver;
+        top: 110px;
+    }
+#accordion li 
+    {
+        text-decoration: none;
+        list-style-type: none;
+    }
+#droppable { width: 350px; height: 400px; padding: 1em; float: left; margin:10px 0px 0px 300px ; background: white; }
+#droppable ul { margin: 0; padding: 1em 0 1em 3em; }
+#droppable ul li
+    {
+        list-style-type: none;
+    }
+#option {
+     float: right;
+     width:200px;
+     heigth:100px;
+     background:white;
+     margin:50px;
+     padding:0px;
+}
+#footer
+    {
+        position:relative;
+        left: 170px;
+        top: -480px;
+    }
+#footer ul li 
+    {
+        margin-left: -7px;
+    }
+#ceckbox 
+    {
+        position:relative;
+        left: 320px;
+        top: -520px;
+    }
+#ceckbox span 
+    {
+        color:#25B6CF ;
+        font-size: 18px;
+    }
+#finish 
+    {
+        position:relative;
+        left: 1120px;
+        top: -540px;
+    }

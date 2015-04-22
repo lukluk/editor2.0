@@ -1,0 +1,88 @@
+<?php
+function file_newname($path, $filename){
+    if ($pos = strrpos($filename, '.')) {
+           $name = substr($filename, 0, $pos);
+           $ext = substr($filename, $pos);
+    } else {
+           $name = $filename;
+    }
+
+    $newpath = $path.'/'.$filename;
+    $newname = $filename;
+    $counter = 0;
+	$newname = $name .'_'. $counter . $ext;
+	$newpath = $path.'/'.$newname;
+	
+    while (file_exists($newpath)) {
+			$counter++;
+			
+           $newname = $name .'_'. $counter . $ext;
+           $newpath = $path.'/'.$newname;
+           
+		   		
+     }
+
+    return $newname;
+}
+$filename = $_GET['src'];
+
+$nfn=str_replace('store/','',$filename);
+$nfn='store/'.file_newname('store',$nfn);
+
+if((strpos(strtolower($filename),'jpg')>0) || (strpos(strtolower($filename),'jepg')>0))
+{
+$image = imagecreatefromjpeg($_GET['src']);
+}else
+{
+  $image = imagecreatefrompng($_GET['src']);
+}
+
+
+
+$width = imagesx($image);
+$height = imagesy($image);
+$dw=$width/floatval(700);
+list($width, $height, $type, $attr) = getimagesize($_GET['src']);
+
+$x=700/$width;
+$h=$height*$x;
+$dh=$height/floatval($h);
+
+$thumb_width = ((intval($_GET['x2'])*$dw)-(intval($_GET['x'])*$dw));
+$thumb_height = ((intval($_GET['y2'])*$dh)-(intval($_GET['y'])*$dh));
+
+$thumb = imagecreatetruecolor( $thumb_width, $thumb_height );
+
+// Resize and crop
+imagecopyresampled($thumb,
+                   $image,
+                   0,0,
+                   (intval($_GET['x'])*$dw),
+                   (intval($_GET['y'])*$dh),
+                   $thumb_width,$thumb_height,
+                   $thumb_width,$thumb_height);
+unlink($filename);
+if((strpos(strtolower($filename),'jpg')>0) || (strpos(strtolower($filename),'jpeg')>0))
+{
+  $ext='.jpg';
+  
+  imagejpeg($thumb, $nfn, 90);
+
+}else
+if(strpos(strtolower($filename),'png')>0)
+{
+  $ext='.png';
+  
+  imagepng($thumb, $nfn, 9);
+  
+}else
+if(strpos(strtolower($filename),'gif')>0)
+{
+  $ext='.gif';
+  
+  imagegif($thumb, $nfn, 9);
+  
+}
+
+echo $nfn;
+?>
