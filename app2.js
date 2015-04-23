@@ -1843,7 +1843,7 @@ $('#clear').click(function() {
         canvas.setWidth(rwid);
         //updateCG(canvas);                        
         saveexisting = 0;
-        $('#saveas').hide();
+        //$('#saveas').hide();
         txtchanged = false;
 
         stack = [];
@@ -2172,7 +2172,7 @@ function savejson(fn, mode, fil) {
         email = 'temp';
         maxpdf = 100000;
         saveexisting = 0;
-        $('#saveas').hide();
+        //$('#saveas').hide();
         var tgll = new Date();
         previewmode = true;
         fname = 'temp' + tgll.getTime();

@@ -76,7 +76,8 @@ Mage::init();
 <html>
 <head>
 	<title><?php toLang('PDF Creator',$lang); ?> </title>
-	<meta http-equiv="X-UA-Compatible" content="ie=8;chrome=1">
+	
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link rel="stylesheet" href="css/win8/jqueryui.css"/>
 <link rel="stylesheet" href="css/jqdlg.css"/>
 <script src="js/jq.js"></script>
@@ -629,7 +630,7 @@ var needToConfirm = true;
 		<div id="top_right_menus" style='margin-left:10px;'>
 			<button id='savetocloud'><?php toLang("Save",$lang); ?></button>
 			<?php if(!$_GET['guest'] && $share!=1) { ?>
-			<button id='saveas' style="display:none"><?php toLang("Save As",$lang); ?></button>
+			<button id='saveas'><?php toLang("Save As",$lang); ?></button>
 			<?php } ?>
 			<?php if(!$_GET['guest'] && $share!=1) { ?>
 			<button id='mfile'><?php toLang("My Files",$lang); ?></button>
@@ -1545,7 +1546,7 @@ $_GET['template']=null;
 		$(document).ready(function(){
 			if(localStorage.getItem('temp')=="true"){
 			fname=localStorage.getItem('fname');
-			$('#filename').html(fname);
+			$('#filename').html(fname.replace(/^.*[\\\/]/, ''));
 			$.get('doXML.php',{filename:'stock/users/<?php echo md5('temp'); ?>/'+fname+'.xml'},function(data){
 				jsonLoad(fname,data);
 
@@ -1569,7 +1570,7 @@ $_GET['template']=null;
 		$(document).ready(function(){
 			fname=GetFilename('<?php echo $file; ?>');
 			$.get('doXML.php',{filename:'<?php echo $file; ?>'},function(data){
-				$('#filename').html('<?php echo str_replace("nano_a/","",$file); ?>');			
+				$('#filename').html(fname);			
 				jsonLoad('<?php echo str_replace("nano_a/","",$xml); ?>',data);
 				saveexisting = 1;
 				$('#wait').hide();
@@ -1586,7 +1587,7 @@ $_GET['template']=null;
 		?>
 		$(document).ready(function(){
 			$.get('doXML.php',{filename:'<?php echo "stock/users/".md5($email)."/".$file; ?>'},function(data){
-				$('#filename').html('<?php echo "stock/users/".md5($email)."/".$file; ?>');
+				$('#filename').html('<?php echo basename($file); ?>');
 				jsonLoad('<?php echo str_replace("nano_a/","",$xml); ?>',data);
 				saveexisting = 1;
 				$('#wait').hide();
@@ -1617,7 +1618,7 @@ if($_GET['template'])
 		$(document).ready(function(){
 			$.get('doXML.php',{filename:'<?php echo "../media/".$xml; ?>'},function(data){
 				jsonLoad('<?php echo str_replace("nano_a/","",$xml); ?>',data);
-				$('#filename').html('<?php echo str_replace("nano_a/","",$xml); ?>');
+				$('#filename').html('<?php echo basename($xml); ?>');
 				saveexisting = 0;
 				$('#wait').hide();
 			});
@@ -1679,28 +1680,28 @@ function getInternetExplorerVersion()
       	$('#wrapper').fadeOut('fast').delay(2000).fadeIn(1000,function(){
 
 
-			var isIe = !!window.ActiveXObject;
-			if(isIe)
-			{
-				if(window.externalHost){
-				$('#wait').fadeOut('slow');
-				}else
-				{
-				needToConfirm=false;
-				///$('#msg').html("<?php toLang("Your Browser Not Support HTML5, you can ",$lang); ?><a href='http://www.google.com/chromeframe' ><?php toLang("download Chrome Frame Plugin",$lang); ?></a>");
-				///window.location('redirect/index.html');
-				$( '#browser-message' ).css (
-					{
-						'display'			: 'block'
-					}
-				);
-				}
-			}else
-			{
+			// var isIe = !!window.ActiveXObject;
+			// if(isIe)
+			// {
+			// 	if(window.externalHost){
+			// 	$('#wait').fadeOut('slow');
+			// 	}else
+			// 	{
+			// 	needToConfirm=false;
+			// 	///$('#msg').html("<?php toLang("Your Browser Not Support HTML5, you can ",$lang); ?><a href='http://www.google.com/chromeframe' ><?php toLang("download Chrome Frame Plugin",$lang); ?></a>");
+			// 	///window.location('redirect/index.html');
+			// 	$( '#browser-message' ).css (
+			// 		{
+			// 			'display'			: 'block'
+			// 		}
+			// 	);
+			// 	}
+			// }else
+			// {
 
-					$('#wait').fadeOut('slow');
+			 		$('#wait').fadeOut('slow');
 
-			}
+			// }
 		});
 
 
