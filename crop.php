@@ -58,7 +58,7 @@ if($png){
 imagesavealpha($thumb, true);
 imagealphablending($thumb, false);
 $transparent = imagecolorallocatealpha($thumb, 0, 0, 0, 127);
-imagefill($img_cropped, 0, 0, $transparent);
+imagefill($thumb, 0, 0, $transparent);
 
 }
 // Resize and crop
@@ -76,19 +76,12 @@ if((strpos(strtolower($filename),'jpg')>0) || (strpos(strtolower($filename),'jpe
   
   imagejpeg($thumb, $nfn, 90);
 
-}else
-if(strpos(strtolower($filename),'png')>0)
+}
+if($png)
 {
   $ext='.png';
   
   imagepng($thumb, $nfn, 9);
-  
-}else
-if(strpos(strtolower($filename),'gif')>0)
-{
-  $ext='.gif';
-  
-  imagegif($thumb, $nfn, 9);
   
 }
 

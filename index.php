@@ -113,6 +113,7 @@ class Config
 	public $maxpdfsize=10000;
 	public $maxpdfslot=5;
 }
+$share=0;
 if($_GET['share']){
 	$link=base64_decode($_GET['share']);
 
@@ -124,11 +125,59 @@ if($_GET['share']){
 		$pin='0000';
 	}
 
+            $userid = $ar[2];
+            $cs = Mage::getModel('customer/customer')->load($userid);
+            $email=$cs->getEmail();
+            $firstname=$cs->getFirstname();
+            $lastname=$cs->getLastname();
+            
+            
+            echo "<script>var firstname='".$firstname."'</script>";
+            echo "<script>var lastname='".$lastname."'</script>";
+            require_once('../.sec/key.php');
+            Mage::getSingleton('core/session')->setPage('editor');
+			$serial=file_get_contents('stock/users/'.md5($email).'/serial.key');
+			$oldserial=file_get_contents('stock/users/'.md5($email).'/oldserial.key');
+			$version=file_get_contents('stock/users/'.md5($email).'/version.key');
+			$keyg=file_get_contents('stock/users/'.md5($email).'/user.key');
+			$r=dekeygen($keyg,$email,$serial);
+
+			if(!$r['error'])
+			{
+				if($r['age']>0)
+				{
+					$paket='pro';
+				}else
+				{
+					$disabled='expired';
+					$paket='default';
+				}
+			}else
+			{
+				$r=dekeygen($keyg,$email,$oldserial);
+				if(!$r['error'])
+				{
+					if($r['age']>0)
+					{
+						$paket='pro';
+					}else
+					{
+						$disabled='expired';
+						$paket='default';
+					}
+				}else
+				{
+					$paket='default';
+				}
+
+			}
+            $username = $firstname.' '.$lastname;
+            $share=1;
 	
 	$dt=file_get_contents('expirelink/'.md5($_GET['share']));
 	if(!file_exists('expirelink/'.md5($_GET['share'])))
 	{
-		$_GET['guest']='gue';
+		
 		$_GET['sharefile']=$ar[0];
 
 	}else
@@ -137,13 +186,13 @@ if($_GET['share']){
 		exit();
 	}
 	if($ar[1]==$pin){
-		$_GET['guest']='gue';
+		
 		$_GET['sharefile']=$ar[0];
 	}else{
 		echo "Link was changed <br/><a href='http://fabreasy.com'>Fabreasy.com</a>";
 		exit();
 	}
-}
+}else
 if($_GET['template'])
 {
 $_SESSION['template']=$_GET['template'];
@@ -166,7 +215,10 @@ if ($_GET['session']) {
             $email=$cs->getEmail();
             $firstname=$cs->getFirstname();
             $lastname=$cs->getLastname();
-
+            
+            
+            echo "<script>var firstname='".$firstname."'</script>";
+            echo "<script>var lastname='".$lastname."'</script>";
             require_once('../.sec/key.php');
             Mage::getSingleton('core/session')->setPage('editor');
 			$serial=file_get_contents('stock/users/'.md5($email).'/serial.key');
@@ -205,7 +257,8 @@ if ($_GET['session']) {
 
 			}
             $username = $ses[1];;
-        } else {
+        } 
+if(!$_GET['share'] && !$_GET['session'])      {
         	if($_GET['guest'])
         	{
         		$guest=true;
@@ -575,7 +628,10 @@ var needToConfirm = true;
 	<div id="headexr" style='position:relative;'>
 		<div id="top_right_menus" style='margin-left:10px;'>
 			<button id='savetocloud'><?php toLang("Save",$lang); ?></button>
-			<?php if(!$_GET['guest']) { ?>
+			<?php if(!$_GET['guest'] && $share!=1) { ?>
+			<button id='saveas' style="display:none"><?php toLang("Save As",$lang); ?></button>
+			<?php } ?>
+			<?php if(!$_GET['guest'] && $share!=1) { ?>
 			<button id='mfile'><?php toLang("My Files",$lang); ?></button>
 			<?php } ?>
 			<button id='clear'><?php toLang("Clear",$lang); ?></button>
@@ -585,7 +641,9 @@ var needToConfirm = true;
 			<button id="redo" style='width:30px;'>&nbsp;</button>
 
 		</div>
-
+		<div style='position:absolute;left:50%;margin-left:-100px;width:200px;top:10px;z-index:999' id="filename">
+		
+		</div>
 		<div style='position:absolute;right:5px;top:10px;z-index:999'>
 		<a href='/index.php'><button id='back'><?php toLang("Back To Templates",$lang); ?></button></a>
 		<!-- <button id='setpdf'><?php toLang("Print PDF (vector)",$lang); ?></button> -->
@@ -1289,7 +1347,7 @@ $ttfInfo->setFontFile('fonts/'.$fnt);
 		</div>
 		<div class='rightbottom' style="position:absolute;right:10px;top:0px;">
 			<span style='font-size:13px;margin-top:-5px;'><?php echo toLang("Welcome",$lang)."<a target='_blank' href='account.php' style='color:#000;'><button>$username</button>"; ?></a></span>&nbsp;&nbsp;&nbsp;&nbsp;
-		<a href='../customer/account/logout'><button id=''><?php if($_GET['guest']){echo 'Login';}else{echo toLang("Logout",$lang); } ?></button></a>
+		<?php if($share!=1) { ?><a href='../customer/account/logout'><button id=''><?php if($_GET['guest']){echo 'Login';}else{echo toLang("Logout",$lang); } ?></button></a><?php } ?>
 		</div>
 
 	</div>
@@ -1458,9 +1516,9 @@ var opens=1;
 </script>
 <?php
 $from='';
-if($_SERVER['REMOTE_ADDR']=='222.124.95.111'){
+
 	$from=2;
-}
+
 ?>
 <script src="app<?php echo $from ?>.js?x=<?php echo time(); ?>"></script>
 <script>
@@ -1483,11 +1541,14 @@ if($_GET['temp'])
 $_GET['template']=null;
 		
 		?>
+		
 		$(document).ready(function(){
 			if(localStorage.getItem('temp')=="true"){
 			fname=localStorage.getItem('fname');
+			$('#filename').html(fname);
 			$.get('doXML.php',{filename:'stock/users/<?php echo md5('temp'); ?>/'+fname+'.xml'},function(data){
 				jsonLoad(fname,data);
+
 				saveexisting = 0;
 				$('#wait').hide();
 				localStorage.setItem('temp',false);
@@ -1508,6 +1569,7 @@ $_GET['template']=null;
 		$(document).ready(function(){
 			fname=GetFilename('<?php echo $file; ?>');
 			$.get('doXML.php',{filename:'<?php echo $file; ?>'},function(data){
+				$('#filename').html('<?php echo str_replace("nano_a/","",$file); ?>');			
 				jsonLoad('<?php echo str_replace("nano_a/","",$xml); ?>',data);
 				saveexisting = 1;
 				$('#wait').hide();
@@ -1524,6 +1586,7 @@ $_GET['template']=null;
 		?>
 		$(document).ready(function(){
 			$.get('doXML.php',{filename:'<?php echo "stock/users/".md5($email)."/".$file; ?>'},function(data){
+				$('#filename').html('<?php echo "stock/users/".md5($email)."/".$file; ?>');
 				jsonLoad('<?php echo str_replace("nano_a/","",$xml); ?>',data);
 				saveexisting = 1;
 				$('#wait').hide();
@@ -1554,6 +1617,7 @@ if($_GET['template'])
 		$(document).ready(function(){
 			$.get('doXML.php',{filename:'<?php echo "../media/".$xml; ?>'},function(data){
 				jsonLoad('<?php echo str_replace("nano_a/","",$xml); ?>',data);
+				$('#filename').html('<?php echo str_replace("nano_a/","",$xml); ?>');
 				saveexisting = 0;
 				$('#wait').hide();
 			});

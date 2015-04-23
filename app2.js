@@ -3,7 +3,7 @@ var tmp = null;
 var backplus = 0;
 var appname = 'letter';
 var appzoom = 1;
-
+var saveas=0;
 function mycallbackform(e, v, m, f) {
     if (typeof v != "undefined")
         if (v) {
@@ -1577,7 +1577,7 @@ function crop(fname) {
                 file: fname
             }, function(data) {
                 fname = data;
-
+                $('#filename').html(fname);
 
                 $('#concrop').html('<center><img width="700" height="auto"   src="' + fname + '" id="icrop" /></center>');
 
@@ -1843,6 +1843,7 @@ $('#clear').click(function() {
         canvas.setWidth(rwid);
         //updateCG(canvas);                        
         saveexisting = 0;
+        $('#saveas').hide();
         txtchanged = false;
 
         stack = [];
@@ -1987,20 +1988,25 @@ function savejson(fn, mode, fil) {
     $('#groption').fadeOut('slow');
     var nojson = false;
     if (!previewmode) {
-        if (saveexisting == 0) {
+        if (saveexisting == 0 || saveas==1) {
 
             if (fname = prompt("File name", "")) {
+                if(saveas!=1)
                 saveexisting = 1;
+                $('#saveas').show();
+                $('#filename').html(fname);
             } else {
                 return false;
             }
 
         } else {
             saveexisting = 1;
+            $('#saveas').show();
         }
     } else {
         var randomNum = Math.ceil(Math.random() * 2000);
         fname = 'previe' + randomNum;
+        $('#filename').html(fname);
         ////console.log(fname);
         nojson = true;
         previewmode = false;
@@ -2166,12 +2172,14 @@ function savejson(fn, mode, fil) {
         email = 'temp';
         maxpdf = 100000;
         saveexisting = 0;
+        $('#saveas').hide();
         var tgll = new Date();
         previewmode = true;
         fname = 'temp' + tgll.getTime();
+        $('#filename').html(fname);
         fil = 'file';
-        localStorage.setItem('email',email);
-        localStorage.setItem('fname',fname);
+        localStorage.setItem('email', email);
+        localStorage.setItem('fname', fname);
     }
     $.post('save' + fil + '.php', {
         name: fname.replace('(', '').replace(')', '').toLowerCase(),
@@ -2197,6 +2205,7 @@ function savejson(fn, mode, fil) {
             if (typeof data != null) {
                 if (!previewmode)
                     saveexisting = 1;
+                $('#saveas').show();
             }
             $("#dialog-save p").html('<span class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>Your page saved successfully');
             $("#dialog-save").dialog("close");
@@ -3971,6 +3980,33 @@ $('#xmlload').uploadifive({
 
     }
 });
+$('#saveas').click(function() {
+    saveas=1;
+    savejson(function(data) {
+        saveas=0;
+        if (data == 'OVER') {
+            $.prompt(a1, {
+                buttons: {
+                    Close: true
+                },
+                focus: 1
+            });
+        } else if (data == 'ERR') {
+            $.prompt(a8 + (maxpdfsize / 1024) + 'KB) Is Over Limitation</strong>', {
+                buttons: {
+                    Close: true
+                },
+                focus: 1
+            });
+        } else {
+            $.get('dofilepdf.php', {
+                name: fname,
+                data: data,
+                email: email
+            });
+        }
+    }, '', 'file');
+});
 $('#savetocloud').click(function() {
 
     if (userid == 'guest') {
@@ -3980,10 +4016,10 @@ $('#savetocloud').click(function() {
             callback: function mycallbackform(e, v, m, f) {
                 if (typeof v != "undefined")
                     if (v) {
-                        savejson(function(){
-                            localStorage.setItem('temp',true);
-                        window.location = '../customer/account/login';
-                        },null,'local');
+                        savejson(function() {
+                            localStorage.setItem('temp', true);
+                            window.location = '../customer/account/login';
+                        }, null, 'local');
                     }
             },
             buttons: {
@@ -4022,7 +4058,10 @@ $('#savetocloud').click(function() {
 });
 $('#mfile').click(function() {
     $.get('getFiles.php', {
-        email: email
+        email: email,
+        userid:userid,
+        firstname:firstname,
+        lastname:lastname
     }, function(data) {
         var arr = data.split("|");
         var res = '';
@@ -4099,6 +4138,7 @@ $('#mfile').click(function() {
         $('.rename').unbind('click').bind('click', function() {
             var t = $(this);
             if (fname = prompt("File name", "")) {
+                $('#filename').html(fname);
                 $.get('rename.php', {
                     path: $(this).attr('data-val'),
                     name: $(this).attr('data-name'),
@@ -4125,10 +4165,13 @@ $('#mfile').click(function() {
             }, function(data) {
                 console.log(name, val);
                 fname = name;
+
+                $('#filename').html(fname);
                 $('#myfiledlg').dialog("close");
                 $('.modal').fadeOut('slow');
                 jsonLoad(name, data);
                 saveexisting = 1;
+                $('#saveas').show();
             });
         });
         $('#myfiledlg').dialog("open");

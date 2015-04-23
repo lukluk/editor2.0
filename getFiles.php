@@ -30,7 +30,7 @@ if ($handle = opendir('stock/users/'.md5($_GET['email']))) {
 				}else{
 					$pin='0000';
 				}
-				$res.= 'stock/users/'.md5($_GET['email']).','.$entry.','.'http://fabreasy.com/editor/index.php?share='.base64_encode('stock/users/'.md5($_GET['email']).'/'.$entry.'|'.$pin)."|";
+				$res.= 'stock/users/'.md5($_GET['email']).','.$entry.','.'http://fabreasy.com/editor/index.php?share='.base64_encode('stock/users/'.md5($_GET['email']).'/'.$entry.'|'.$pin.'|'.$_GET['userid'].'|'.$_GET['firstname'].'|'.$_GET['lastname'])."|";
 
 				$i++;
 				if($paket=='default' && $i==6)
